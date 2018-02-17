@@ -1,0 +1,70 @@
+RewriteEngine on
+
+# Redirect to domain with www.
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteRule .* http://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Same for HTTPS:
+RewriteCond %{HTTPS} on
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteRule .* https://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Ensure all directory URLs have a trailing slash.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !\/$
+RewriteCond %{REQUEST_URI} !\/[^\/]*\.[^\/]+$
+RewriteRule .* http://%{HTTP_HOST}%{REQUEST_URI}/ [L,R=301]
+# Same for HTTPS:
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !\/$
+RewriteCond %{REQUEST_URI} !\/[^\/]*\.[^\/]+$
+RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI}/ [L,R=301]
+
+# Stop hotlinking.
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} ^https?://([^/]+)/ [NC]
+RewriteCond %1#%{HTTP_HOST} !^(.+)#\1$
+RewriteRule \.(jpg|jpeg|png|gif|swf|svg)$ - [NC,F,L]
+
+# Add Caching.
+<FilesMatch ".(ico|jpg|jpeg|png|gif|js|css|swf)$">
+    Header set Cache-Control "max-age=31104000"
+</FilesMatch>
+
+# Prevent viewing of htaccess file.
+<Files .htaccess>
+    order allow,deny
+    deny from all
+</Files>
+
+# Prevent directory listings
+Options All -Indexes
+
+#301 Redirect Entire Directory.
+RedirectMatch 301 ^/assets/(.*)$ /index.php/$1
+RedirectMatch 301 ^/views/(.*)$ /index.php/$1
+RedirectMatch 301 ^/drawable/(.*)$ /index.php/$1
+
+# Custom error pages.
+ErrorDocument 400 /error.php
+ErrorDocument 401 /error.php
+ErrorDocument 402 /error.php
+ErrorDocument 403 /error.php
+ErrorDocument 404 /error.php
+ErrorDocument 405 /error.php
+ErrorDocument 406 /error.php
+ErrorDocument 407 /error.php
+ErrorDocument 408 /error.php
+ErrorDocument 409 /error.php
+ErrorDocument 410 /error.php
+ErrorDocument 411 /error.php
+ErrorDocument 412 /error.php
+ErrorDocument 413 /error.php
+ErrorDocument 414 /error.php
+ErrorDocument 500 /error.php
+ErrorDocument 501 /error.php
+ErrorDocument 502 /error.php
+ErrorDocument 503 /error.php
+ErrorDocument 504 /error.php
+ErrorDocument 505 /error.php
